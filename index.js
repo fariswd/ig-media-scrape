@@ -1,8 +1,7 @@
 const puppeteer = require('puppeteer');
-const cheerio = require('cheerio')
-const fs = require('fs')
+const fs = require('fs');
 const axios = require('axios');
-const Path = require('path') 
+const Path = require('path');
 
 const saveHtml = (content) => {
   fs.writeFile('ig.html', content, 'utf8', () => {
@@ -30,8 +29,9 @@ const main = async () => {
   await page.goto('https://www.instagram.com/p/BpiZ45Rnhu9/?utm_source=ig_web_button_share_sheet');
   const content = await page.content()
 
-  const $ = cheerio.load(content)
-  const result = $('article').html().toString()
+  const result = await page.evaluate(() => {
+    return document.querySelector('article').innerHTML
+  });
   const pics = result.match(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/g);
   const vids = result.match(/(http(s?):)([/|.|\w|\s|-])*\.(?:mp4)/g);
   const media = [...pics, ...vids]
